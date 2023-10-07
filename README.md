@@ -11,6 +11,7 @@ O XuBank é uma fintech emergente que busca um sistema modular e confiável para
 * Victor de Souza Friche Passos
 * Pedro Afonso
 * Ian Nascimento
+* Raul Fernandes
 
 ## Professor responsável 
 

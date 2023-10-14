@@ -23,4 +23,9 @@ class ClienteVip extends Cliente {
     public void resgatarRecompensas(int quantidadePontos) {
         sistemaRecompensas.resgatarPontos(quantidadePontos);
     }
+
+    @Override
+    public String getTipoCliente() {
+        throw new UnsupportedOperationException("Cliente Gold'");
+    }
 }

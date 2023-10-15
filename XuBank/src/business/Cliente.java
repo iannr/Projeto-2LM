@@ -11,6 +11,18 @@ public abstract class Cliente {
 		this.senha = senha;
 	}
 
+    public String getNome() {
+   	return nome;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public boolean autenticar(String senha) {
+        return this.senha.equals(senha);
+    } 
+	
 	public abstract String getTipoCliente(); // vai ser implementado em cada classe de cliente especifico
 
 }

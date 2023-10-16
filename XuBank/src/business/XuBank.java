@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XuBank {
-    private List<Cliente> clientes;
-    private List<Conta> contas;
+    public List<Cliente> clientes;
+    public List<Conta> contas;
 
     public XuBank() {
         clientes = new ArrayList<>();

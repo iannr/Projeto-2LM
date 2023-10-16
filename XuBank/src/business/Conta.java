@@ -7,10 +7,12 @@ public interface Conta {
 
 	List<String> consultarExtrato();
 
-	boolean saque(double valor);
+	boolean sacar(double valor);
 
 	void depositar(double valor);
 
 	void transferir(Conta destino, double valor);
+	
+	Cliente getCliente();
 
 }

@@ -1,35 +1,54 @@
 package business;
 
-public class ContaCorrente {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ContaCorrente implements Conta{
+	private Cliente cliente;
 	private double saldo;
+	private List<String> extrato;
 
-	public ContaCorrente(double saldoInicial) {
-		saldo = saldoInicial;
-	}
+	public ContaCorrente(Cliente cliente) {
+        this.cliente = cliente;
+        this.saldo = 0;
+        this.extrato = new ArrayList<>();
+    }
 
-	public void cobrarTaxaMensal() {
-		saldo -= 20.0;
-	}
+	@Override
+    public double consultarSaldo() {
+        return saldo;
+    }
 
-	public boolean realizarSaqueEspecial(double valor) {
-		if (valor > 0 && valor <= (saldo + 200.0)) {
-			saldo -= valor;
-			return true;
-		} else {
-			System.out.println("Saque especial excedeu o limite de R$200 ou é um valor inválido.");
-			return false;
-		}
-	}
+    @Override
+    public void depositar(double valor) {
+        saldo += valor;
+        extrato.add("Depósito: + R$" + valor);
+    }
 
-	public void depositar(double valor) {
-		if (valor > 0) {
-			saldo += valor;
-		} else {
-			System.out.println("O valor de depósito deve ser maior que zero.");
-		}
-	}
+    @Override
+    public boolean sacar(double valor) {
+        if (valor <= saldo) {
+            saldo -= valor;
+            extrato.add("Saque: - R$" + valor);
+            return true;
+        }
+        return false;
+    }
 
-	public double getSaldo() {
-		return saldo;
-	}
+    @Override
+    public void transferir(Conta destino, double valor) {
+        if (sacar(valor)) {
+            destino.depositar(valor);
+            extrato.add("Transferência para " + destino.getCliente().getNome() + ": - R$" + valor);
+        }
+    }
+
+    @Override
+    public List<String> consultarExtrato() {
+        return extrato;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
 }

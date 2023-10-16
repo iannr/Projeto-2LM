@@ -1,49 +1,61 @@
 package business;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
-public class ContaPoupanca {
-    private double saldo;
-    private Date ultimaDataDeRendimento;
+public class ContaPoupanca implements Conta{
+	 private Cliente cliente;
+	    private double saldo;
+	    private List<String> extrato;
+	    private static final double RENDIMENTO_MENSAL = 0.005; // 0,5%
 
-    public ContaPoupanca(double saldoInicial) {
-        saldo = saldoInicial;
-        ultimaDataDeRendimento = new Date();
-    }
+	    public ContaPoupanca(Cliente cliente) {
+	        this.cliente = cliente;
+	        this.saldo = 0;
+	        this.extrato = new ArrayList<>();
+	    }
 
-    public double getSaldo() {
-        return saldo;
-    }
+	    @Override
+	    public double consultarSaldo() {
+	        return saldo;
+	    }
 
-    public void calcularRendimento() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(ultimaDataDeRendimento);
-        int diaDoMes = calendar.get(Calendar.DAY_OF_MONTH);
+	    @Override
+	    public void depositar(double valor) {
+	        saldo += valor;
+	        extrato.add("Depósito: + R$" + valor);
+	        // Aplicar rendimento mensal
+	        double rendimento = saldo * RENDIMENTO_MENSAL;
+	        saldo += rendimento;
+	        extrato.add("Rendimento Mensal: + R$" + rendimento);
+	    }
 
-        if (diaDoMes >= 5) {
-            double rendimento = saldo * 0.005; // 0,5% de rendimento
-            saldo += rendimento;
-            ultimaDataDeRendimento = new Date();
-        }
-    }
+	    @Override
+	    public boolean sacar(double valor) {
+	        if (valor <= saldo) {
+	            saldo -= valor;
+	            extrato.add("Saque: - R$" + valor);
+	            return true;
+	        }
+	        return false;
+	    }
 
-    public void depositar(double valor) {
-        if (valor > 0) {
-            saldo += valor;
-        } else {
-            System.out.println("O valor de depósito deve ser maior que zero.");
-        }
-    }
+	    @Override
+	    public void transferir(Conta destino, double valor)
+	{
+	        if (sacar(valor)) {
+	            destino.depositar(valor);
+	            extrato.add("Transferência para " + destino.getCliente().getNome() + ": - R$" + valor);
+	        }
+	    }
 
-    public static void main(String[] args) {
-        ContaPoupanca minhaConta = new ContaPoupanca(1000.0);
-        System.out.println("Saldo inicial: R$" + minhaConta.getSaldo());
+	    @Override
+	    public List<String> consultarExtrato() {
+	        return extrato;
+	    }
 
-        minhaConta.calcularRendimento();
-        System.out.println("Saldo após o cálculo de rendimento: R$" + minhaConta.getSaldo());
-
-        double deposito = 500.0;
-        minhaConta.depositar(deposito);
-        System.out.println("Saldo após o depósito de R$" + deposito + ": R$" + minhaConta.getSaldo());
-    }
+	    public Cliente getCliente() {
+	        return cliente;
+	    }
 }

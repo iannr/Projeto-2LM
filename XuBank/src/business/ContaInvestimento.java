@@ -1,67 +1,66 @@
 package business;
 
-public class ContaInvestimento {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ContaInvestimento implements Conta {
+    private Cliente cliente;
     private double saldo;
-    private double taxaRendimentoDiario = 0.002; // Rendimento diário de 0,2%
-    private double taxaImposto = 0.15; // Imposto de 15%
-    private double taxaSaque = 0.015; // Taxa de saque de 1,5%
+    private double rendimentoDiario;
+    private List<String> extrato;
+    private static final double IMPOSTO_SAQUE = 0.15; // 15%
 
-    public ContaInvestimento(double saldoInicial) {
-        saldo = saldoInicial;
+    public ContaInvestimento(Cliente cliente, double rendimentoDiario) {
+        this.cliente = cliente;
+        this.saldo = 0;
+        this.rendimentoDiario = rendimentoDiario;
+        this.extrato = new ArrayList<>();
     }
 
-    public void calcularRendimentoDiario() {
-        double rendimento = saldo * taxaRendimentoDiario;
-        saldo += rendimento;
-
-        if (rendimento > 0) {
-            System.out.println("Rendimento positivo: R$" + rendimento);
-        } else if (rendimento < 0) {
-            System.out.println("Rendimento negativo: R$" + rendimento);
-        } else {
-            System.out.println("Sem rendimento.");
-        }
-    }
-
-    public void sacar(double valor) {
-        double rendimento = saldo * taxaRendimentoDiario;
-        double valorSaque = valor + (rendimento * taxaSaque);
-
-        if (valorSaque <= saldo) {
-            saldo -= valorSaque;
-            double imposto = rendimento * taxaImposto;
-            saldo -= imposto;
-            System.out.println("Saque realizado com sucesso.");
-        } else {
-            System.out.println("Saldo insuficiente para efetuar o saque.");
-        }
-    }
-
-    public void depositar(double valor) {
-        if (valor > 0) {
-            saldo += valor;
-        } else {
-            System.out.println("O valor de depósito deve ser maior que zero.");
-        }
-    }
-
-    public double getSaldo() {
+    @Override
+    public double consultarSaldo() {
         return saldo;
     }
 
-    public static void main(String[] args) {
-        ContaInvestimento minhaConta = new ContaInvestimento(1000.0);
-        System.out.println("Saldo inicial: R$" + minhaConta.getSaldo());
+    @Override
+    public void depositar(double valor) {
+        saldo += valor;
+        extrato.add("Depósito: + R$" + valor);
+    }
 
-        minhaConta.calcularRendimentoDiario();
-        System.out.println("Saldo após o cálculo de rendimento diário: R$" + minhaConta.getSaldo());
+    @Override
+    public boolean sacar(double valor) {
+        if (valor <= saldo) {
+            double imposto = valor * IMPOSTO_SAQUE;
+            saldo -= (valor + imposto);
+            extrato.add("Saque: - R$" + valor);
+            extrato.add("Imposto de Saque: - R$" + imposto);
+            return true;
+        }
+        return false;
+    }
 
-        double saque = 300.0;
-        minhaConta.sacar(saque);
-        System.out.println("Saldo após o saque de R$" + saque + ": R$" + minhaConta.getSaldo());
+    @Override
+    public void transferir(Conta destino, double valor) {
+        if (sacar(valor)) {
+            destino.depositar(valor);
+            extrato.add("Transferência para " + destino.getCliente().getNome() + ": - R$" + valor);
+        }
+    }
 
-        double deposito = 500.0;
-        minhaConta.depositar(deposito);
-        System.out.println("Saldo após o depósito de R$" + deposito + ": R$" + minhaConta.getSaldo());
+    @Override
+    public List<String> consultarExtrato() {
+        return extrato;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public double getRendimentoDiario() {
+        return rendimentoDiario;
+    }
+    public void setRendimentoDiario(double rendimentoDiario) {
+    	this.rendimentoDiario = rendimentoDiario;
     }
 }

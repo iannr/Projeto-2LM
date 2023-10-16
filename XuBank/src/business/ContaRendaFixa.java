@@ -1,47 +1,67 @@
 package business;
 
-public class ContaRendaFixa {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ContaRendaFixa implements Conta {
+    private Cliente cliente;
     private double saldo;
-    private double taxaJurosAnual = 0.05; // 5% de juros anuais
+    private double rendimentoContratado;
+    private List<String> extrato;
+    private static final double IMPOSTO_SAQUE = 0.15; // 15%
 
-    public ContaRendaFixa(double saldoInicial) {
-        saldo = saldoInicial;
+    public ContaRendaFixa(Cliente cliente, double rendimentoContratado) {
+        this.cliente = cliente;
+        this.saldo = 0;
+        this.rendimentoContratado = rendimentoContratado;
+        this.extrato = new ArrayList<>();
     }
 
-    public void aplicarJurosAnuais() {
-        saldo += saldo * taxaJurosAnual;
-    }
-
-    public void cobrarImpostoSaque() {
-        double rendimento = saldo - (saldo / (1 + taxaJurosAnual));
-        double imposto = rendimento * 0.15; // Imposto de 15% sobre o rendimento
-        saldo -= imposto;
-    }
-
-    public void depositar(double valor) {
-        if (valor > 0) {
-            saldo += valor;
-        } else {
-            System.out.println("O valor de depósito deve ser maior que zero.");
-        }
-    }
-
-    public double getSaldo() {
+    @Override
+    public double consultarSaldo() {
         return saldo;
     }
 
-    public static void main(String[] args) {
-        ContaRendaFixa minhaConta = new ContaRendaFixa(1000.0);
-        System.out.println("Saldo inicial: R$" + minhaConta.getSaldo());
+    @Override
+    public void depositar(double valor) {
+        saldo += valor;
+        extrato.add("Depósito: + R$" + valor);
+    }
 
-        minhaConta.aplicarJurosAnuais();
-        System.out.println("Saldo após a aplicação de juros anuais: R$" + minhaConta.getSaldo());
+    @Override
+    public boolean sacar(double valor) {
+        if (valor <= saldo) {
+            double imposto = valor * IMPOSTO_SAQUE;
+            saldo -= (valor + imposto);
+            extrato.add("Saque: - R$" + valor);
+            extrato.add("Imposto de Saque: - R$" + imposto);
+            return true;
+        }
+        return false;
+    }
 
-        minhaConta.cobrarImpostoSaque();
-        System.out.println("Saldo após o saque com cobrança de imposto: R$" + minhaConta.getSaldo());
+    @Override
+    public void transferir(Conta destino, double valor) {
+        if (sacar(valor)) {
+            destino.depositar(valor);
+            extrato.add("Transferência para " + destino.getCliente().getNome() + ": - R$" + valor);
+        }
+    }
 
-        double deposito = 500.0;
-        minhaConta.depositar(deposito);
-        System.out.println("Saldo após o depósito de R$" + deposito + ": R$" + minhaConta.getSaldo());
+    @Override
+    public List<String> consultarExtrato() {
+        return extrato;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public double getRendimentoContratado() {
+        return rendimentoContratado;
+    }
+    
+    public void setRendimentoContratado(double rendimentoContratado) {
+    	this.rendimentoContratado = rendimentoContratado;
     }
 }

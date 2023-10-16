@@ -3,7 +3,7 @@ package business;
 import java.util.ArrayList;
 import java.util.List;
 
-class XuBank {
+public class XuBank {
     private List<Cliente> clientes;
     private List<Conta> contas;
 
